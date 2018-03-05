@@ -26,10 +26,10 @@ function configure_tests()
 
   # {min,max}_elem are the exponents for the number of elements, base is 2
   min_elem=1
-  max_elem=21
+  max_elem=10
   # the "order" here is actually number of 1D points, i.e. p+1, not p
   min_order=2
-  max_order=9
+  max_order=3
   # the number of points is computed as num_elements*(p+1)**3
   max_points=3000000
 
@@ -218,6 +218,12 @@ function run_tests()
       echo " number of points is $npts."
 
       [[ -z "$dry_run" ]] && cd b$j
+      myjobs=$(qstat -u thilina | wc -l)
+      while [ $myjobs -ge 22 ]; do
+        echo 'Queue quota exceeded; sleeping for 30 minutes'
+        sleep 30
+        myjobs=$(qstat -u thilina | wc -l)
+      done 
       $dry_run nekmpi b$j $num_proc_run
       [[ -z "$dry_run" ]] && cd ..
     done
