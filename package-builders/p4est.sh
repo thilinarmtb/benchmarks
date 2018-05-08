@@ -72,6 +72,7 @@ function p4est_build()
          --enable-mpi \
          --enable-shared \
          --disable-vtk-binary \
+         --disable-memalign \
          --without-blas \
          --prefix="$pkg_bld_dir" \
          CC="$MPICC" \

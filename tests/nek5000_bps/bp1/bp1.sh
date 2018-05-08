@@ -234,7 +234,7 @@ function run_tests()
         myjobs=$(qstat -u thilina | wc -l)
       done 
       sleep 30
-      cat *.output
+      cat ${qid}.output
       [[ -z "$dry_run" ]] && cd ..
     done
 

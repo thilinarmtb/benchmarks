@@ -39,7 +39,7 @@ function setup_xlc()
 function setup_gcc()
 {
    MPICC=mpicc
-   MPICXX=mpic++
+   MPICXX=mpicxx
    MPIF77=mpif77
 
    CFLAGS="-O3 -mcpu=a2 -mtune=a2"

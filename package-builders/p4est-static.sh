@@ -71,6 +71,7 @@ function p4est_build()
       $P4EST_SOURCE_DIR/configure \
          --enable-mpi \
          --disable-shared \
+         --disable-memalign \
          --disable-vtk-binary \
          --without-blas \
          --prefix="$pkg_bld_dir" \

@@ -111,11 +111,28 @@ function run_test()
       total_memory_required="${total_memory_required_list[$i]}"
       if [ -z "$dry_run" ]; then
          echo "Running test:"
+         myjobs=$(qstat -u thilina | wc -l)
+         while [ $myjobs -ge 3 ]; do
+           echo 'Queue quota exceeded; sleeping for 30 seconds.'
+           sleep 30
+           myjobs=$(qstat -u thilina | wc -l)
+         done 
+
          quoted_echo $mpi_run ./$test_name_sfx "${all_args[@]}"
          check_memory_req && {
-            $mpi_run ./$test_name_sfx "${all_args[@]}" || \
+            qid=$($mpi_run ./$test_name_sfx "${all_args[@]}") || \
             printf "\nError in the test, error code: $?\n\n"
          }
+         sleep 10
+         myjobs=$(qstat -u thilina | wc -l)
+         echo "Thilina"
+         while [ $myjobs -ge 3 ]; do
+           echo "Waiting the job ${qid} to finish; sleeping for 30 seconds."
+           sleep 30
+           myjobs=$(qstat -u thilina | wc -l)
+         done 
+         sleep 30
+         cat ${qid}.output
       else
          $dry_run $mpi_run ./$test_name_sfx "${all_args[@]}"
          check_memory_req
