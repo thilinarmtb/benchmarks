@@ -26,12 +26,12 @@ function configure_tests()
 
   # {min,max}_elem are the exponents for the number of elements, base is 2
   min_elem=1
-  max_elem=10
+  max_elem=16
   # the "order" here is actually number of 1D points, i.e. p+1, not p
-  min_order=2
-  max_order=3
+  min_order=5
+  max_order=6
   # the number of points is computed as num_elements*(p+1)**3
-  max_points=3000000
+  max_points=100000
 
   while (( 2**min_elem < num_proc_node )); do
      ((min_elem=min_elem+1))
@@ -51,8 +51,8 @@ function configure_tests()
   done
 
   # Make sure that we do not exceed 2^21 limit
-  if [[ "$max_elem" -gt 21 ]]; then
-    max_elem=21
+  if [[ "$max_elem" -gt 20 ]]; then
+    max_elem=20
   fi
 }
 
@@ -126,7 +126,7 @@ function build_tests()
     if [[ "$newbuild" = false ]]; then
       echo "Reusing the existing build ..."
     fi
-    $BP_ROOT/makenek $1 &> buildlog
+    printf "y\n" | $BP_ROOT/makenek $1 &> buildlog
     if [[ ! -e nek5000 ]]; then
       echo "Error building the test, see 'buildlog' for details. Stop."
       CFLAGS="${CFLAGS_orig}"
@@ -218,13 +218,23 @@ function run_tests()
       echo " number of points is $npts."
 
       [[ -z "$dry_run" ]] && cd b$j
+      ## TODO: Use this from machine-configs
       myjobs=$(qstat -u thilina | wc -l)
-      while [ $myjobs -ge 22 ]; do
-        echo 'Queue quota exceeded; sleeping for 30 minutes'
+      while [ $myjobs -ge 3 ]; do
+        echo 'Queue quota exceeded; sleeping for 30 seconds.'
         sleep 30
         myjobs=$(qstat -u thilina | wc -l)
       done 
       $dry_run nekmpi b$j $num_proc_run
+      sleep 30
+      myjobs=$(qstat -u thilina | wc -l)
+      while [ $myjobs -ge 3 ]; do
+        echo 'Waiting the job to finish; sleeping for 30 seconds.'
+        sleep 30
+        myjobs=$(qstat -u thilina | wc -l)
+      done 
+      sleep 30
+      cat *.output
       [[ -z "$dry_run" ]] && cd ..
     done
 

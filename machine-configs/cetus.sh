@@ -32,16 +32,15 @@ function setup_xlc()
    # TEST_EXTRA_CFLAGS+=" -qnoeh"
    # TEST_EXTRA_CFLAGS+=" -qreport -qlistopt -qlist -qskipsrc=hide -qsource"
 
-   NEK5K_EXTRA_PPLIST="BGQ EXTBAR"
+   NEK5K_EXTRA_PPLIST="EXTBAR"
 }
 
 
 function setup_gcc()
 {
-   # GCC 4.7.2
-   MPICC=mpigcc-4.7.2-fastmpi
-   MPICXX=mpig++-4.7.2-fastmpi
-   MPIF77=mpigfortran-4.7.2-fastmpi
+   MPICC=mpicc
+   MPICXX=mpic++
+   MPIF77=mpif77
 
    CFLAGS="-O3 -mcpu=a2 -mtune=a2"
    FFLAGS="$CFLAGS"
@@ -52,50 +51,23 @@ function setup_gcc()
 }
 
 
-function setup_gcc_b()
-{
-   # GCC 4.7.2
-   MPICC=mpigcc-4.7.2-fastmpi
-   MPICXX=mpig++-4.7.2-fastmpi
-   MPIF77=mpigfortran-4.7.2-fastmpi
-
-   CFLAGS="-O3 -mcpu=a2 -mtune=a2"
-   FFLAGS="$CFLAGS"
-   TEST_EXTRA_CFLAGS="--param max-completely-peel-times=3"
-   # TEST_EXTRA_CFLAGS+=" -std=c++11 -fdump-tree-optimized-blocks"
-}
-
-
-function setup_clang()
-{
-   # clang 3.7.0
-   MPICC=mpiclang-fastmpi
-   MPICXX=mpiclang++-fastmpi
-   MPIF77=mpif77-fastmpi
-
-   CFLAGS="-O3 -mcpu=a2 -mtune=a2"
-   FFLAGS="$CFLAGS"
-   TEST_EXTRA_CFLAGS="-fcolor-diagnostics -fvectorize -fslp-vectorize"
-   TEST_EXTRA_CFLAGS+=" -fslp-vectorize-aggressive -ffp-contract=fast"
-   # "-std=c++11 -pedantic -Wall"
-}
-
-
 function set_mpi_options()
 {
    local account="${account:-CSC249ADCD04}"
    local partition="${partition:-default}"
 
    MPIEXEC_OPTS="-A ${account} -q ${partition} -t 60 "
-   # MPIEXEC_OPTS="-A ceed -p psmall"
-   MPIEXEC_OPTS+=" --mode c$num_proc_node"
+   MPIEXEC_OPTS+=" --mode c$num_proc_node -n $num_nodes"
+##   if [[ "$num_proc_node" -gt "16" ]]; then
+##      MPIEXEC_OPTS+=" --overcommit"
+##   fi
    compose_mpi_run_command
 }
 
 
 MFEM_EXTRA_CONFIG="MFEM_TIMER_TYPE=0"
 
-valid_compilers="xlc gcc gcc_b clang"
+valid_compilers="xlc gcc"
 num_proc_build=${num_proc_build:-16}
 num_proc_run=${num_proc_run:-16}
 num_proc_node=${num_proc_node:-16}
@@ -105,4 +77,4 @@ node_virt_mem_lim=16
 
 # Optional (default): MPIEXEC (mpirun), MPIEXEC_OPTS (), MPIEXEC_NP (-np)
 MPIEXEC=qsub
-MPIEXEC_NP="-n $num_nodes --proccount"
+MPIEXEC_NP=" --proccount"

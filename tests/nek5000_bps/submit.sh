@@ -16,9 +16,6 @@
 # software, applications, hardware, advanced system engineering and early
 # testbed platforms, in support of the nation's exascale computing imperative.
 
-#SBATCH -o out.file
-#SBATCH -e error.file
-
 echo $1        >  SESSION.NAME
 echo `pwd`'/' >>  SESSION.NAME
 touch $1.rea
