@@ -14,7 +14,8 @@
 # software, applications, hardware, advanced system engineering and early
 # testbed platforms, in support of the nation's exascale computing imperative.
 
-# Clone and build OCCA.
+# Clone and build the deal.II CEED benchmarks from:
+#    https://github.com/kronbichler/ceed_benchmarks_dealii
 
 if [[ -z "$pkg_sources_dir" ]]; then
    echo "This script ($0) should not be called directly. Stop."
@@ -24,22 +25,19 @@ if [[ -z "$OUT_DIR" ]]; then
    echo "The variable 'OUT_DIR' is not set. Stop."
    return 1
 fi
-pkg_src_dir="occa"
-OCCA_SOURCE_DIR="$pkg_sources_dir/$pkg_src_dir"
-pkg_bld_dir="$OUT_DIR/occa"
-OCCA_DIR="$pkg_bld_dir"
-# The OCCA branch can be set on the command line of go.sh too.
-occa_branch="${occa_branch:-master}"
-OCCA_BRANCH="${occa_branch}"
-pkg="OCCA (branch ${occa_branch})"
-pkg_var_prefix="occa_"
+pkg_src_dir="dealii-ceed-bps"
+DEALII_CEED_BPS_SOURCE_DIR="$pkg_sources_dir/$pkg_src_dir"
+pkg_bld_dir="$OUT_DIR/dealii-ceed-bps"
+DEALII_CEED_BPS_DIR="$pkg_bld_dir"
+pkg_var_prefix="dealii_ceed_bps_"
+pkg="deal.II-CEED-BPs"
 
 
-function occa_clone()
+function dealii_ceed_bps_clone()
 {
-   pkg_repo_list=("git@github.com:libocca/occa.git"
-                  "https://github.com/libocca/occa.git")
-   pkg_git_branch="${occa_branch}"
+   pkg_repo_list=("git@github.com:kronbichler/ceed_benchmarks_dealii.git"
+                  "https://github.com/kronbichler/ceed_benchmarks_dealii.git")
+   pkg_git_branch="branch_dealii-8.5"
    cd "$pkg_sources_dir" || return 1
    if [[ -d "$pkg_src_dir" ]]; then
       update_git_package
@@ -47,55 +45,58 @@ function occa_clone()
    fi
    for pkg_repo in "${pkg_repo_list[@]}"; do
       echo "Cloning $pkg from $pkg_repo ..."
-      git clone "$pkg_repo" "$pkg_src_dir" && \
-      cd "$pkg_src_dir" && \
-      git checkout "$pkg_git_branch" && \
-      return 0
+      git clone "$pkg_repo" "$pkg_src_dir" && return 0
    done
    echo "Could not successfully clone $pkg. Stop."
    return 1
 }
 
 
-function occa_build()
+function dealii_ceed_bps_build_aux()
+{
+   local bp_dir=
+   for bp_dir; do
+      mkdir -p "$pkg_bld_dir/$bp_dir" && \
+      cd "$pkg_bld_dir/$bp_dir" && \
+      cmake "$DEALII_CEED_BPS_SOURCE_DIR/$bp_dir" \
+         -DCMAKE_BUILD_TYPE="Release" \
+         -DCMAKE_VERBOSE_MAKEFILE=1 \
+         -DCMAKE_C_COMPILER="$MPICC" \
+         -DCMAKE_C_FLAGS_RELEASE="$CFLAGS" \
+         -DCMAKE_CXX_COMPILER="$MPICXX" \
+         -DCMAKE_CXX_FLAGS_RELEASE="$CFLAGS" \
+         -DCMAKE_CXX_FLAGS="$NATIVE_CFLAG" \
+         -DDEAL_II_DIR="$DEALII_DIR" && \
+      make -j $num_proc_build || return 1
+   done
+   return 0
+}
+
+
+function dealii_ceed_bps_build()
 {
    if package_build_is_good; then
       echo "Using successfully built $pkg from OUT_DIR."
       return 0
    elif [[ ! -d "$pkg_bld_dir" ]]; then
-      cd "$OUT_DIR" && git clone "$OCCA_SOURCE_DIR" || {
-         echo "Cloning $OCCA_SOURCE_DIR to OUT_DIR failed. Stop."
-         return 1
-      }
+      mkdir -p "$pkg_bld_dir"
+   fi
+   if [[ -z "$DEALII_DIR" ]]; then
+      echo "The required variable 'DEALII_DIR' is not set. Stop."
+      return 1
    fi
    echo "Building $pkg, sending output to ${pkg_bld_dir}_build.log ..." && {
-      cd "$pkg_bld_dir" && \
-      make \
-         CXX="$MPICXX" \
-         CXXFLAGS="$CFLAGS" \
-         $OCCA_EXTRA_CONFIG \
-         -j $num_proc_build
+      dealii_ceed_bps_build_aux "bp1" "bp2" "bp3" "bp4" "bp5" "bp6"
    } &> "${pkg_bld_dir}_build.log" || {
       echo " ... building $pkg FAILED, see log for details."
       return 1
    }
    echo "Build successful."
-   print_variables "$pkg_var_prefix" \
-      OCCA_BRANCH \
-      > "${pkg_bld_dir}_build_successful"
+   : > "${pkg_bld_dir}_build_successful"
 }
 
 
 function build_package()
 {
-   occa_clone && get_package_git_version && occa_build || return 1
-
-   add_to_path before PATH "${OCCA_DIR}/bin"
-   add_to_path before LD_LIBRARY_PATH "${OCCA_DIR}/lib"
-   add_to_path before DYLD_LIBRARY_PATH "${OCCA_DIR}/lib"
-   OCCA_CXX="${OCCA_CXX:-$MPICXX}"
-   OCCA_CXXFLAGS="${OCCA_CXXFLAGS:-$CFLAGS}"
-   OCCA_CUDA_COMPILER_FLAGS="${CUFLAGS}"
-   export PATH LD_LIBRARY_PATH DYLD_LIBRARY_PATH OCCA_CXX OCCA_CXXFLAGS
-   export OCCA_CUDA_COMPILER_FLAGS
+   dealii_ceed_bps_clone && get_package_git_version && dealii_ceed_bps_build
 }

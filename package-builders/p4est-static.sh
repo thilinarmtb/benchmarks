@@ -14,7 +14,7 @@
 # software, applications, hardware, advanced system engineering and early
 # testbed platforms, in support of the nation's exascale computing imperative.
 
-# Clone and build OCCA.
+# Clone and build the development version of p4est.
 
 if [[ -z "$pkg_sources_dir" ]]; then
    echo "This script ($0) should not be called directly. Stop."
@@ -24,32 +24,29 @@ if [[ -z "$OUT_DIR" ]]; then
    echo "The variable 'OUT_DIR' is not set. Stop."
    return 1
 fi
-pkg_src_dir="occa"
-OCCA_SOURCE_DIR="$pkg_sources_dir/$pkg_src_dir"
-pkg_bld_dir="$OUT_DIR/occa"
-OCCA_DIR="$pkg_bld_dir"
-# The OCCA branch can be set on the command line of go.sh too.
-occa_branch="${occa_branch:-master}"
-OCCA_BRANCH="${occa_branch}"
-pkg="OCCA (branch ${occa_branch})"
-pkg_var_prefix="occa_"
+pkg_src_dir="p4est"
+P4EST_SOURCE_DIR="$pkg_sources_dir/$pkg_src_dir"
+pkg_bld_dir="$OUT_DIR/p4est"
+P4EST_DIR="$pkg_bld_dir"
+pkg_var_prefix="p4est_"
+pkg="p4est"
 
 
-function occa_clone()
+function p4est_clone()
 {
-   pkg_repo_list=("git@github.com:libocca/occa.git"
-                  "https://github.com/libocca/occa.git")
-   pkg_git_branch="${occa_branch}"
+   pkg_repo_list=("git@github.com:cburstedde/p4est.git"
+                  "https://github.com/cburstedde/p4est.git")
+   pkg_git_branch="master"
    cd "$pkg_sources_dir" || return 1
    if [[ -d "$pkg_src_dir" ]]; then
-      update_git_package
+      update_git_package && \
+      git submodule init && git submodule update
       return
    fi
    for pkg_repo in "${pkg_repo_list[@]}"; do
       echo "Cloning $pkg from $pkg_repo ..."
       git clone "$pkg_repo" "$pkg_src_dir" && \
-      cd "$pkg_src_dir" && \
-      git checkout "$pkg_git_branch" && \
+      cd "$pkg_src_dir" && git submodule init && git submodule update && \
       return 0
    done
    echo "Could not successfully clone $pkg. Stop."
@@ -57,45 +54,45 @@ function occa_clone()
 }
 
 
-function occa_build()
+function p4est_build()
 {
    if package_build_is_good; then
       echo "Using successfully built $pkg from OUT_DIR."
       return 0
    elif [[ ! -d "$pkg_bld_dir" ]]; then
-      cd "$OUT_DIR" && git clone "$OCCA_SOURCE_DIR" || {
-         echo "Cloning $OCCA_SOURCE_DIR to OUT_DIR failed. Stop."
-         return 1
-      }
+      mkdir -p "$pkg_bld_dir"
    fi
    echo "Building $pkg, sending output to ${pkg_bld_dir}_build.log ..." && {
-      cd "$pkg_bld_dir" && \
-      make \
-         CXX="$MPICXX" \
-         CXXFLAGS="$CFLAGS" \
-         $OCCA_EXTRA_CONFIG \
-         -j $num_proc_build
+      cd "$P4EST_SOURCE_DIR" && \
+      echo "--- bootstrap ----------------------------------------------" && \
+      ./bootstrap && \
+      echo "--- configure ----------------------------------------------" && \
+      mkdir -p "$pkg_bld_dir"/build && cd "$pkg_bld_dir"/build && \
+      $P4EST_SOURCE_DIR/configure \
+         --enable-mpi \
+         --disable-shared \
+         --disable-vtk-binary \
+         --without-blas \
+         --prefix="$pkg_bld_dir" \
+         CC="$MPICC" \
+         CFLAGS="$CFLAGS" \
+         CPPFLAGS="-DSC_LOG_PRIORITY=SC_LP_ESSENTIAL" && \
+      echo "--- make ---------------------------------------------------" && \
+      make -j $num_proc_build && \
+      echo "--- make install -------------------------------------------" && \
+      make install && \
+      cd .. && rm -rf build
    } &> "${pkg_bld_dir}_build.log" || {
       echo " ... building $pkg FAILED, see log for details."
       return 1
    }
    echo "Build successful."
    print_variables "$pkg_var_prefix" \
-      OCCA_BRANCH \
-      > "${pkg_bld_dir}_build_successful"
+      CFLAGS > "${pkg_bld_dir}_build_successful"
 }
 
 
 function build_package()
 {
-   occa_clone && get_package_git_version && occa_build || return 1
-
-   add_to_path before PATH "${OCCA_DIR}/bin"
-   add_to_path before LD_LIBRARY_PATH "${OCCA_DIR}/lib"
-   add_to_path before DYLD_LIBRARY_PATH "${OCCA_DIR}/lib"
-   OCCA_CXX="${OCCA_CXX:-$MPICXX}"
-   OCCA_CXXFLAGS="${OCCA_CXXFLAGS:-$CFLAGS}"
-   OCCA_CUDA_COMPILER_FLAGS="${CUFLAGS}"
-   export PATH LD_LIBRARY_PATH DYLD_LIBRARY_PATH OCCA_CXX OCCA_CXXFLAGS
-   export OCCA_CUDA_COMPILER_FLAGS
+   p4est_clone && get_package_git_version && p4est_build
 }
