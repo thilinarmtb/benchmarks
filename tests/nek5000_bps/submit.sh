@@ -1,5 +1,4 @@
-#!/bin/bash
-
+#!/bin/sh
 # Copyright (c) 2017, Lawrence Livermore National Security, LLC. Produced at
 # the Lawrence Livermore National Laboratory. LLNL-CODE-734707. All Rights
 # reserved. See files LICENSE and NOTICE for details.
@@ -24,9 +23,10 @@ rm -f ioinfo
 mv $1.log.$2 $1.log1.$2 2>/dev/null
 mv $1.sch $1.sch1       2>/dev/null
 # echo "Executing: $mpi_run ./nek5000 > $1.log.$2"
-echo "Executing: $mpi_run ./nek5000"
-echo "In directory: $PWD"
+#echo "Executing: $mpi_run ./nek5000"
+#echo "In directory: $PWD"
 # $mpi_run ./nek5000 > $1.log.$2
-$mpi_run ./nek5000
+qid=$($mpi_run ./nek5000)
+echo ${qid}
 sleep 2
 # ln $1.log.$2 logfile

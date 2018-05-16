@@ -28,10 +28,10 @@ function configure_tests()
   min_elem=1
   max_elem=16
   # the "order" here is actually number of 1D points, i.e. p+1, not p
-  min_order=5
-  max_order=6
+  min_order=17
+  max_order=17
   # the number of points is computed as num_elements*(p+1)**3
-  max_points=100000
+  max_points=1000000
 
   while (( 2**min_elem < num_proc_node )); do
      ((min_elem=min_elem+1))
@@ -194,7 +194,8 @@ function nekmpi()
      return 1
   fi
 
-  ./submit.sh $1 $2
+  qid=$(./submit.sh $1 $2)
+  echo "${qid}"
 }
 
 function run_tests()
@@ -225,11 +226,13 @@ function run_tests()
         sleep 30
         myjobs=$(qstat -u thilina | wc -l)
       done 
-      $dry_run nekmpi b$j $num_proc_run
+#      $dry_run nekmpi b$j $num_proc_run
+      qid=$(nekmpi b$j $num_proc_run)
+      echo "qid is ${qid}"
       sleep 30
       myjobs=$(qstat -u thilina | wc -l)
       while [ $myjobs -ge 3 ]; do
-        echo 'Waiting the job to finish; sleeping for 30 seconds.'
+        echo 'Waiting for the job to finish; sleeping for 30 seconds.'
         sleep 30
         myjobs=$(qstat -u thilina | wc -l)
       done 

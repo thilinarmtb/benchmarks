@@ -999,7 +999,7 @@ c     call dsavg(e1)
 
       call opcopy    (t1,t2,t3,r1,r2,r3) ! Save RHS
 
-      tol       = 1.e-6 
+      tol       = 1.e-30 
       param(22) = tol
       maxit     = 100
 
@@ -1022,7 +1022,7 @@ c     call dsavg(e1)
       if(nid.eq.0)write(6,3)lx1,nelgv,er1,er2,er3,' error v',maxit
    3  format(i3,i9,1p3e12.4,1x,a8,i9)
 
-      maxit  = 200
+      maxit  = 100
       call opcopy(r1,r2,r3,t1,t2,t3)
       call opzero(u1,u2,u3)          ! Save Exact SOLN
       call nekgsync()
