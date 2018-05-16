@@ -17,6 +17,7 @@
 function setup_xlc()
 {
    MPICC=mpixlc
+   MPIC=mpixlc
    MPICXX=mpixlcxx
    MPIF77=mpixlf77
    mpi_info_flag="-qversion=verbose"
@@ -39,6 +40,7 @@ function setup_xlc()
 function setup_gcc()
 {
    MPICC=mpicc
+   MPIC=mpicc
    MPICXX=mpicxx
    MPIF77=mpif77
 

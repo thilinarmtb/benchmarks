@@ -72,6 +72,7 @@ function dealii_build()
    else
       echo "${magenta}Warning: Building $pkg without LAPACK ...${none}"
    fi
+   echo "Thilina : $P4EST_DIR"
    echo "Building $pkg, sending output to ${pkg_bld_dir}_build.log ..." && {
       mkdir -p "$pkg_bld_dir"/build && cd "$pkg_bld_dir"/build && \
       cmake "$DEALII_SOURCE_DIR" \
@@ -88,10 +89,28 @@ function dealii_build()
          -DDEAL_II_WITH_MPI="ON" \
          "${LAPACK_CMAKE_OPTS[@]}" \
          -DDEAL_II_WITH_P4EST="ON" \
-         -DP4EST_DIR="$P4EST_DIR" \
+         -DP4EST_LIBRARIES="/home/thilina/CEED/benchmarks/builds/cetus_gcc/p4est/lib/libp4est.a;/home/thilina/CEED/benchmarks/builds/cetus_gcc/p4est/lib/libsc.a;/home/thilina/zlib/lib/libz.a" \
+         -DP4EST_INCLUDE_DIRS="/home/thilina/CEED/benchmarks/builds/cetus_gcc/p4est/include" \
+         -DP4EST_VERSION="2.0" \
+         -DP4EST_VERSION_MAJOR="2" \
+         -DP4EST_VERSION_MINOR="0" \
+         -DP4EST_VERSION_SUBMINOR="0" \
+         -DP4EST_VERSION_PATCH="0" \
+         -DP4EST_WITH_MPI="TRUE" \
+         -DP4EST_WITH_ZLIB="TRUE" \
+         -DDEAL_II_WITH_ZLIB="ON" \
+         -DZLIB_DIR="/home/thilina/zlib" \
+         -DDEAL_II_WITH_BZIP2="OFF" \
          -DBUILD_SHARED_LIBS="OFF" \
          -DCMAKE_DISABLE_FIND_PACKAGE_Boost="ON" \
-         -DDEAL_II_WITH_THREADS="OFF" && \
+         -DDEAL_II_WITH_THREADS="OFF"\
+         -DMPI_CXX_INCLUDE_PATH="" \
+         -DMPI_CXX_FOUND="TRUE" \
+         -DMPI_CXX_COMPILER="$MPICXX" \
+         -DMPI_C_COMPILER="$MPIC" \
+         -DMPI_CXX_LINK_FLAGS="" \
+         -DMPI_LIBRARIES="" \
+         -DMPI_HAVE_MPI_SEEK_SET="TRUE" && \
       make -j $num_proc_build && \
       make install && \
       cd .. && rm -rf build

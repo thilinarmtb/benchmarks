@@ -76,7 +76,8 @@ function p4est_build()
          --without-blas \
          --prefix="$pkg_bld_dir" \
          CC="$MPICC" \
-         CFLAGS="$CFLAGS" \
+         CFLAGS="$CFLAGS -I/home/thilina/zlib/include" \
+         LIBS="-L/home/thilina/zlib/lib/ -lz"
          CPPFLAGS="-DSC_LOG_PRIORITY=SC_LP_ESSENTIAL" && \
       echo "--- make ---------------------------------------------------" && \
       make -j $num_proc_build && \
