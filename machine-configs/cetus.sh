@@ -58,11 +58,11 @@ function set_mpi_options()
    local account="${account:-CSC249ADCD04}"
    local partition="${partition:-default}"
 
-   MPIEXEC_OPTS="-A ${account} -q ${partition} -t 60 "
+   MPIEXEC_OPTS="-A ${account} -q ${partition} -t 29"
    MPIEXEC_OPTS+=" --mode c$num_proc_node -n $num_nodes"
-##   if [[ "$num_proc_node" -gt "16" ]]; then
-##      MPIEXEC_OPTS+=" --overcommit"
-##   fi
+#   if [[ "$num_proc_node" -gt "16" ]]; then
+#      MPIEXEC_OPTS+=" --overcommit"
+#   fi
    compose_mpi_run_command
 }
 

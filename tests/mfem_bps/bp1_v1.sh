@@ -112,9 +112,9 @@ function run_test()
       if [ -z "$dry_run" ]; then
          echo "Running test:"
          myjobs=$(qstat -u thilina | wc -l)
-         while [ $myjobs -ge 3 ]; do
+         while [ $myjobs -ge 19 ]; do
            echo 'Queue quota exceeded; sleeping for 30 seconds.'
-           sleep 30
+           sleep 10
            myjobs=$(qstat -u thilina | wc -l)
          done 
 
@@ -122,17 +122,8 @@ function run_test()
          check_memory_req && {
             qid=$($mpi_run ./$test_name_sfx "${all_args[@]}") || \
             printf "\nError in the test, error code: $?\n\n"
+            echo "Thilina ${qid}"
          }
-         sleep 10
-         myjobs=$(qstat -u thilina | wc -l)
-         echo "Thilina"
-         while [ $myjobs -ge 3 ]; do
-           echo "Waiting the job ${qid} to finish; sleeping for 30 seconds."
-           sleep 30
-           myjobs=$(qstat -u thilina | wc -l)
-         done 
-         sleep 30
-         cat ${qid}.output
       else
          $dry_run $mpi_run ./$test_name_sfx "${all_args[@]}"
          check_memory_req
@@ -157,9 +148,12 @@ mesh_p=1
 vdim=${vdim:-1}
 vec_layout=${vec_layout:-}
 # test id:     0   1   2   3   4   5   6   7   8   9
-sol_p_list=(   1   2   3   4   5   6   7   8   1   2)
-ir_order_list=(0   0   0   0   0   0   0   0   3   5)
-enabled_tests_def="0   1   2   3   4   5   6   7   8   9"
+#sol_p_list=(   1   2   3   4   5   6   7   8   1   2)
+#ir_order_list=(0   0   0   0   0   0   0   0   3   5)
+#enabled_tests_def="0   1   2   3   4   5   6   7   8   9"
+sol_p_list=( 16  )
+ir_order_list=( 0 )
+enabled_tests_def="0"
 # enabled_tests_def="1   2   3   4   5   6   7   8"   # for bp3 on vulcan + xlc
 # enabled_tests_def="0"
 enabled_tests="${enabled_tests:-$enabled_tests_def}"

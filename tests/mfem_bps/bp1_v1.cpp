@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
    const char *pc = "lor";
    bool perf = true;
    bool matrix_free = true;
-   int max_iter = 50;
+   int max_iter = 100;
    bool visualization = 1;
 
    OptionsParser args(argc, argv);
@@ -594,7 +594,7 @@ int main(int argc, char *argv[])
    // Solve with CG or PCG, depending if the matrix A_pc is available
    CGSolver *pcg;
    pcg = new CGSolver(MPI_COMM_WORLD);
-   pcg->SetRelTol(1e-6);
+   pcg->SetRelTol(1e-30);
    pcg->SetMaxIter(max_iter);
    pcg->SetPrintLevel(3);
 

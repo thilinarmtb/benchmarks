@@ -38,4 +38,4 @@ function build_and_run_tests()
 }
 
 
-test_required_packages="p4est dealii dealii-ceed-bps"
+test_required_packages="p4est-static dealii-static dealii-ceed-bps-static"

@@ -26,12 +26,12 @@ function configure_tests()
 
   # {min,max}_elem are the exponents for the number of elements, base is 2
   min_elem=1
-  max_elem=16
+  max_elem=20
   # the "order" here is actually number of 1D points, i.e. p+1, not p
   min_order=17
   max_order=17
   # the number of points is computed as num_elements*(p+1)**3
-  max_points=1000000
+  max_points=3000000
 
   while (( 2**min_elem < num_proc_node )); do
      ((min_elem=min_elem+1))
@@ -200,6 +200,8 @@ function nekmpi()
 
 function run_tests()
 {
+  local qid_list=()
+
   [[ -z "$dry_run" ]] && cd "$test_exe_dir"
 
   set_mpi_options
@@ -219,25 +221,46 @@ function run_tests()
       echo " number of points is $npts."
 
       [[ -z "$dry_run" ]] && cd b$j
-      ## TODO: Use this from machine-configs
+
       myjobs=$(qstat -u thilina | wc -l)
-      while [ $myjobs -ge 3 ]; do
+      while [ $myjobs -ge 19 ]; do
         echo 'Queue quota exceeded; sleeping for 30 seconds.'
-        sleep 30
+        sleep 10
         myjobs=$(qstat -u thilina | wc -l)
       done 
-#      $dry_run nekmpi b$j $num_proc_run
+
       qid=$(nekmpi b$j $num_proc_run)
-      echo "qid is ${qid}"
-      sleep 30
-      myjobs=$(qstat -u thilina | wc -l)
-      while [ $myjobs -ge 3 ]; do
-        echo 'Waiting for the job to finish; sleeping for 30 seconds.'
-        sleep 30
-        myjobs=$(qstat -u thilina | wc -l)
-      done 
-      sleep 30
-      cat ${qid}.output
+
+      qid_list+=("${qid}")
+
+      [[ -z "$dry_run" ]] && cd ..
+    done
+
+    [[ -z "$dry_run" ]] && cd ..
+  done
+
+  local count=0
+  echo "Thilina ${qid_list[@]}"
+
+  for i in `seq $min_order 1 $max_order`
+  do
+    [[ -z "$dry_run" ]] && cd lx$i
+    set_max_elem_order "$i"
+    for j in `seq $min_elem 1 $max_elem_order`
+    do
+      [[ -z "$dry_run" ]] && cd b$j
+
+        echo "${qid_list[${count}]}".output
+        myjobs=$(qstat -u thilina)
+        while [[ "${myjobs}" = *"${qid_list[${count}]}"* ]]; do
+          sleep 10
+          myjobs=$(qstat -u thilina)
+        done
+        sleep 20
+        cat "${qid_list[${count}]}".output
+
+        count=$((count+1))
+
       [[ -z "$dry_run" ]] && cd ..
     done
 
@@ -253,15 +276,10 @@ function build_and_run_tests()
   configure_tests
   echo "Generating the box meshes ..."
   $dry_run generate_boxes || return 1
-  echo 'Buiding the sin and w tests ...'
-  $dry_run build_tests zsin || return 1
-#  $dry_run build_tests zsin zw || return 1
-  echo 'Running the sin tests ...'
-  run_tests zsin
-  # W tests are commented as there is no diskquota
-  # in vulcan to run both the tests
-#  echo 'Running the w tests ...'
-#  $dry_run run_tests zw
+  echo 'Buiding the bp tests ...'
+  $dry_run build_tests bp1 || return 1
+  echo 'Running the bp tests ...'
+  run_tests bp1
 }
 
 test_required_packages="nek5000"
