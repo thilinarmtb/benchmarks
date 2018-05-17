@@ -43,7 +43,7 @@ function genbb()
 {
   cp $1.box ttt.box
   echo
-  echo "Running genbox ..."
+  echo "Running genbox ...${NEK5K_DIR}"
   printf "ttt.box\n" | $NEK5K_DIR/bin/genbox || return 1
   echo
   echo "Running genmap ..."

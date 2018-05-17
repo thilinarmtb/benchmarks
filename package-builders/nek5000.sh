@@ -76,6 +76,8 @@ function nek5k_build()
         cp -p maketools maketools.orig && \
         sed -e 's/#BIGMEM/BIGMEM/' maketools.orig > maketools
       fi
+      cp -p maketools maketools.orig && \
+      sed -e 's/#MAXNEL.*/MAXNEL=1100000/' maketools.orig > maketools
       mv genbox/SIZE genbox/SIZE.orig && \
       sed "3s/30/150/" genbox/SIZE.orig > genbox/SIZE && \
       ./maketools genbox && \
