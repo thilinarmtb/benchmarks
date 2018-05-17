@@ -16,6 +16,9 @@
 # exascale computing imperative.
 
 
+mfem_count=0
+mfem_qid_list=()
+
 function build_tests()
 {
    local num_tests="${#sol_p_list[@]}"
@@ -105,12 +108,13 @@ function run_test()
    local test_name_sfx="${test_name}${suffix}"
    local common_args="-no-vis $mesh_opt -rs $ser_ref -rp $par_ref -pc none"
    local num_args="${#args_list[@]}" args= all_args=()
+
+
    for ((i = 0; i < num_args; i++)) do
       args="${args_list[$i]}"
       all_args=($common_args $args "${test_extra_args[@]}")
       total_memory_required="${total_memory_required_list[$i]}"
       if [ -z "$dry_run" ]; then
-         echo "Running test:"
          myjobs=$(qstat -u thilina | wc -l)
          while [ $myjobs -ge 19 ]; do
            echo 'Queue quota exceeded; sleeping for 30 seconds.'
@@ -118,17 +122,20 @@ function run_test()
            myjobs=$(qstat -u thilina | wc -l)
          done 
 
+         echo "Running test:"
          quoted_echo $mpi_run ./$test_name_sfx "${all_args[@]}"
          check_memory_req && {
             qid=$($mpi_run ./$test_name_sfx "${all_args[@]}") || \
             printf "\nError in the test, error code: $?\n\n"
-            echo "Thilina ${qid}"
+            mfem_qid_list+=("${qid}")
+            mfem_count=$((mfem_count+1))
          }
       else
          $dry_run $mpi_run ./$test_name_sfx "${all_args[@]}"
          check_memory_req
       fi
    done
+
 }
 
 
@@ -151,7 +158,7 @@ vec_layout=${vec_layout:-}
 #sol_p_list=(   1   2   3   4   5   6   7   8   1   2)
 #ir_order_list=(0   0   0   0   0   0   0   0   3   5)
 #enabled_tests_def="0   1   2   3   4   5   6   7   8   9"
-sol_p_list=( 16  )
+sol_p_list=( 17 )
 ir_order_list=( 0 )
 enabled_tests_def="0"
 # enabled_tests_def="1   2   3   4   5   6   7   8"   # for bp3 on vulcan + xlc
@@ -260,6 +267,14 @@ function run_tests_if_enabled()
             }
          done
       fi
+   done
+
+   for ((i = 0; i < mfem_count; i++)) do
+         myjobs=$(qstat -u thilina)
+         while [[ "${myjobs}" = *"${mfem_qid_list[${i}]}"* ]]; do
+           myjobs=$(qstat -u thilina)
+         done
+         cat "${mfem_qid_list[${count}]}".output
    done
 }
 

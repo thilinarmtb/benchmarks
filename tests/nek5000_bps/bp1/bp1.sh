@@ -240,7 +240,6 @@ function run_tests()
   done
 
   local count=0
-  echo "Thilina ${qid_list[@]}"
 
   for i in `seq $min_order 1 $max_order`
   do
@@ -253,10 +252,8 @@ function run_tests()
         echo "${qid_list[${count}]}".output
         myjobs=$(qstat -u thilina)
         while [[ "${myjobs}" = *"${qid_list[${count}]}"* ]]; do
-          sleep 10
           myjobs=$(qstat -u thilina)
         done
-        sleep 20
         cat "${qid_list[${count}]}".output
 
         count=$((count+1))
