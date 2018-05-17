@@ -102,7 +102,7 @@ function build_tests()
         -e "s/lelg=[0-9]*/lelg=${lelg}/" \
         $BP_ROOT/SIZE > SIZE
 
-    cp $BP_ROOT/bp1/$1.usr lx$i/
+    cp $BP_ROOT/$1/$1.usr lx$i/
 
     # Set lx1 in SIZE file
     sed "s/lx1=[0-9]*/lx1=${i}/" SIZE > lx$i/SIZE.new
@@ -151,7 +151,7 @@ function build_tests()
 
     for i in `seq $min_order 1 $max_order`
     do
-      cp -r $BP_ROOT/bp1/$2.usr lx$i/
+      cp -r $BP_ROOT/$1/$2.usr lx$i/
       cd lx$i
       rm nek5000 $1.usr > /dev/null 2>&1
 
