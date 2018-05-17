@@ -34,7 +34,21 @@ function build_and_run_tests()
 
    set_mpi_options
 
-   $dry_run $mpi_run $bp_exe
+   myjobs=$(qstat -u thilina | wc -l)
+   while [ $myjobs -ge 8 ]; do
+     echo 'Queue quota exceeded; sleeping for 30 seconds.'
+     sleep 10
+     myjobs=$(qstat -u thilina | wc -l)
+   done 
+
+   qid=$($mpi_run $bp_exe)
+   sleep 10
+   
+   myjobs=$(qstat -u thilina)
+   while [[ "${myjobs}" = *"${qid}"* ]]; do
+     myjobs=$(qstat -u thilina)
+   done
+   cat "${qid}".output
 }
 
 

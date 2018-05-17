@@ -116,7 +116,7 @@ function run_test()
       total_memory_required="${total_memory_required_list[$i]}"
       if [ -z "$dry_run" ]; then
          myjobs=$(qstat -u thilina | wc -l)
-         while [ $myjobs -ge 19 ]; do
+         while [ $myjobs -ge 10 ]; do
            echo 'Queue quota exceeded; sleeping for 30 seconds.'
            sleep 10
            myjobs=$(qstat -u thilina | wc -l)
@@ -154,13 +154,15 @@ geom=Geometry::CUBE
 mesh_p=1
 vdim=${vdim:-1}
 vec_layout=${vec_layout:-}
+
 # test id:     0   1   2   3   4   5   6   7   8   9
 #sol_p_list=(   1   2   3   4   5   6   7   8   1   2)
 #ir_order_list=(0   0   0   0   0   0   0   0   3   5)
 #enabled_tests_def="0   1   2   3   4   5   6   7   8   9"
-sol_p_list=( 17 )
-ir_order_list=( 0 )
-enabled_tests_def="0"
+sol_p_list=(    6 7 8 9 10 11 12 13 14 )
+ir_order_list=( 0 0 0 0  0  0  0  0  0)
+enabled_tests_def="0 1 2 3 4 5 6 7 8"
+
 # enabled_tests_def="1   2   3   4   5   6   7   8"   # for bp3 on vulcan + xlc
 # enabled_tests_def="0"
 enabled_tests="${enabled_tests:-$enabled_tests_def}"
@@ -299,6 +301,5 @@ run_tests_if_enabled 0 1 2 3 4 5 6 7 8 9
 $dry_run make -f "$test_dir/makefile" clean-exec
 
 }
-
 
 test_required_packages="metis hypre mfem"

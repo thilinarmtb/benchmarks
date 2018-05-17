@@ -594,7 +594,7 @@ int main(int argc, char *argv[])
    // Solve with CG or PCG, depending if the matrix A_pc is available
    CGSolver *pcg;
    pcg = new CGSolver(MPI_COMM_WORLD);
-   pcg->SetRelTol(1e-30);
+   pcg->SetRelTol(1e-8);
    pcg->SetMaxIter(max_iter);
    pcg->SetPrintLevel(3);
 
