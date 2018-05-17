@@ -274,7 +274,7 @@ function run_tests_if_enabled()
          while [[ "${myjobs}" = *"${mfem_qid_list[${i}]}"* ]]; do
            myjobs=$(qstat -u thilina)
          done
-         cat "${mfem_qid_list[${count}]}".output
+         cat "${mfem_qid_list[${i}]}".output
    done
 }
 
