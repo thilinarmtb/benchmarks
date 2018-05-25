@@ -54,10 +54,8 @@ function dealii_ceed_bps_clone()
 
 function dealii_ceed_bps_build_aux()
 {
-   echo "I am here 0"
    local bp_dir=
    for bp_dir; do
-      echo "I am here 1"
       mkdir -p "$pkg_bld_dir/$bp_dir" && \
       cd "$pkg_bld_dir/$bp_dir" && \
       cmake "$DEALII_CEED_BPS_SOURCE_DIR/$bp_dir" \
@@ -88,7 +86,6 @@ function dealii_ceed_bps_build()
       echo "The required variable 'DEALII_DIR' is not set. Stop."
       return 1
    fi
-   echo "I am here 2"
    echo "Building $pkg, sending output to ${pkg_bld_dir}_build.log ..." && {
       dealii_ceed_bps_build_aux "bp1" "bp2"
    } &> "${pkg_bld_dir}_build.log" || {
