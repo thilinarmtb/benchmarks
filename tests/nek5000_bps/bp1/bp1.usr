@@ -370,7 +370,7 @@ C     Generate diagonal preconditioner for Helmholtz operator.
       include 'SIZE'
       include 'TOTAL'
 
-      n     = nel*lx1*ly1*lz1
+      n     = nelv*lx1*ly1*lz1
       call rone (d,n)
 
       return
@@ -1224,7 +1224,7 @@ c             x1   - exact solution for convergence checking
       rpp1(3) = wv  (3)
 
       do 1000 iter=1,maxit
-         call axhm3    (pap,ap1,ap2,ap3,p1,p1,p2,h1,h2,name)
+         call axhm3    (pap,ap1,ap2,ap3,p1,p2,p3,h1,h2,name)
          call opdssum  (ap1,ap2,ap3,nx1,ny1,nz1)
          if (name.ne.'bp1'.and.name.ne.'bp2') call opmask(ap1,ap2,ap3)
 

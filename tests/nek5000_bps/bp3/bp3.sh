@@ -28,8 +28,8 @@ function configure_tests()
   min_elem=1
   max_elem=20
   # the "order" here is actually number of 1D points, i.e. p+1, not p
-  min_order=7
-  max_order=15
+  min_order=2
+  max_order=17
   # the number of points is computed as num_elements*(p+1)**3
   max_points=3000000
 
