@@ -72,7 +72,6 @@ function dealii_build()
    else
       echo "${magenta}Warning: Building $pkg without LAPACK ...${none}"
    fi
-   echo "Thilina : $P4EST_DIR"
    echo "Building $pkg, sending output to ${pkg_bld_dir}_build.log ..." && {
       mkdir -p "$pkg_bld_dir"/build && cd "$pkg_bld_dir"/build && \
       cmake "$DEALII_SOURCE_DIR" \
