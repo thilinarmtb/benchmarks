@@ -707,6 +707,7 @@ c-----------------------------------------------------------------------
 c     Do it one time before we benchmark
       call cggos(u1,r1,e1,vmult,binvm1,tol,maxit1,'bp1')
 
+      maxit  = 100
       call opcopy(r1,r2,r3,t1,t2,t3)
       call opzero(u1,u2,u3)          ! Save Exact SOLN
       maxit1=maxit
