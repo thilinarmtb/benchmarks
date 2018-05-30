@@ -118,11 +118,11 @@ function run_test()
       all_args=($common_args $args "${test_extra_args[@]}")
       total_memory_required="${total_memory_required_list[$i]}"
       if [ -z "$dry_run" ]; then
-         myjobs=$(qstat -u thilina | wc -l)
+         myjobs=$(qstat -u dutta | wc -l)
          while [ $myjobs -ge 10 ]; do
            echo 'Queue quota exceeded; sleeping for 30 seconds.'
            sleep 10
-           myjobs=$(qstat -u thilina | wc -l)
+           myjobs=$(qstat -u dutta | wc -l)
          done 
 
          echo "Running test:"
@@ -274,9 +274,9 @@ function run_tests_if_enabled()
    done
 
    for ((i = 0; i < mfem_count; i++)) do
-         myjobs=$(qstat -u thilina)
+         myjobs=$(qstat -u dutta)
          while [[ "${myjobs}" = *"${mfem_qid_list[${i}]}"* ]]; do
-           myjobs=$(qstat -u thilina)
+           myjobs=$(qstat -u dutta)
          done
          cat "${mfem_qid_list[${i}]}".output
    done
