@@ -454,7 +454,7 @@ c-----------------------------------------------------------------------
 
       nio    = nid
       nx     = nx1-1
-      ndof   = ldim*nelgt      ! ndofs
+      ndof   = nelgt      ! ndofs
       ndof   = ndof*(nx**ldim)
       nppp   = ndof/np         ! ndofs/proc
 

@@ -68,7 +68,7 @@ function dealii_ceed_bps_build_aux()
          -DCMAKE_CXX_COMPILER="$MPICXX" \
          -DCMAKE_CXX_FLAGS_RELEASE="$CFLAGS" \
          -DCMAKE_CXX_FLAGS="$NATIVE_CFLAG" \
-         -DCMAKE_CXX_FLAGS_RELEASE="-I/home/thilina/CEED/benchmarks/builds/cetus_gcc/p4est/include" \
+         -DCMAKE_CXX_FLAGS_RELEASE="-I/home/thilina/CEED/benchmarks/builds/cetus_gcc/p4est/include -mminimal-toc" \
          -DDEAL_II_DIR="$DEALII_DIR" && \
       make -j $num_proc_build || return 1
    done

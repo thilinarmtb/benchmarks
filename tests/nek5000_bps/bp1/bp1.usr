@@ -579,7 +579,7 @@ c-----------------------------------------------------------------------
 
       call geodat1n  ! Set up gf() arrays
 
-      ifsync = .false.
+      ifsync = .true.
 
       ifield = 1
       n = nx1*ny1*nz1*nelt
@@ -673,7 +673,7 @@ c-----------------------------------------------------------------------
 
       call geodat1n  ! Set up gf() arrays
 
-      ifsync = .false.
+      ifsync = .true.
 
       ifield = 1
       n = nx1*ny1*nz1*nelt

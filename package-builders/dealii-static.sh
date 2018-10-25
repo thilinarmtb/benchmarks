@@ -88,8 +88,8 @@ function dealii_build()
          -DDEAL_II_WITH_MPI="ON" \
          "${LAPACK_CMAKE_OPTS[@]}" \
          -DDEAL_II_WITH_P4EST="ON" \
-         -DP4EST_LIBRARIES="/home/thilina/CEED/benchmarks/builds/cetus_gcc/p4est/lib/libp4est.a;/home/thilina/CEED/benchmarks/builds/cetus_gcc/p4est/lib/libsc.a;/home/thilina/zlib/lib/libz.a" \
-         -DP4EST_INCLUDE_DIRS="/home/thilina/CEED/benchmarks/builds/cetus_gcc/p4est/include" \
+         -DP4EST_LIBRARIES="/home/thilina/CEED/benchmarks/builds/cetus_xlc/p4est/lib/libp4est.a;/home/thilina/CEED/benchmarks/builds/cetus_xlc/p4est/lib/libsc.a;/home/thilina/zlib/lib/libz.a" \
+         -DP4EST_INCLUDE_DIRS="/home/thilina/CEED/benchmarks/builds/cetus_xlc/p4est/include" \
          -DP4EST_VERSION="2.0" \
          -DP4EST_VERSION_MAJOR="2" \
          -DP4EST_VERSION_MINOR="0" \
@@ -109,10 +109,12 @@ function dealii_build()
          -DMPI_C_COMPILER="$MPIC" \
          -DMPI_CXX_LINK_FLAGS="" \
          -DMPI_LIBRARIES="" \
+         -DDEAL_II_SETUP_DEFAULT_COMPILER_FLAGS="OFF" \
+         -DDEAL_II_COMPILER_USE_VECTOR_ARITHMETICS="ON" \
          -DMPI_HAVE_MPI_SEEK_SET="TRUE" && \
       make -j $num_proc_build && \
-      make install && \
-      cd .. && rm -rf build
+      make install # && \
+#      cd .. && rm -rf build
    } &> "${pkg_bld_dir}_build.log" || {
       echo " ... building $pkg FAILED, see log for details."
       return 1

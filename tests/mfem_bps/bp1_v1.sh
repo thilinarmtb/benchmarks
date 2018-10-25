@@ -155,10 +155,6 @@ mesh_p=1
 vdim=${vdim:-1}
 vec_layout=${vec_layout:-}
 
-# test id:     0   1   2   3   4   5   6   7   8   9
-#sol_p_list=(   1   2   3   4   5   6   7   8   1   2)
-#ir_order_list=(0   0   0   0   0   0   0   0   3   5)
-#enabled_tests_def="0   1   2   3   4   5   6   7   8   9"
 sol_p_list=(    1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16)
 ir_order_list=( 0 0 0 0 0 0 0 0 0  0  0  0  0  0  0  0)
 enabled_tests_def="0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15"

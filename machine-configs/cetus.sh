@@ -25,15 +25,16 @@ function setup_xlc()
    # CFLAGS=""
    # CFLAGS="-O2 -qmaxmem=-1"
    # CFLAGS="-O3 -qstrict -qdebug=forcesqrt -qdebug=nsel -qmaxmem=-1"
-   CFLAGS="-O3 -qnounwind -qsuppress=1540-1088:1540-1090:1540-1101"
+   #CFLAGS="-O3 -qnounwind -qsuppress=1540-1088:1540-1090:1540-1101"
+   CFLAGS="-O3 -qnounwind"
    FFLAGS="-O3 -qnounwind"
-   # TEST_EXTRA_CFLAGS=""
-   TEST_EXTRA_CFLAGS="-O5 -qnounwind -qstrict"
-   TEST_EXTRA_CFLAGS+=" -qsuppress=1540-1088:1540-1090:1540-1101"
+   #TEST_EXTRA_CFLAGS=""
+   #TEST_EXTRA_CFLAGS="-O5 -qnounwind -qstrict"
+   #TEST_EXTRA_CFLAGS+="-qsuppress=1540-1088:1540-1090:1540-1101"
    # TEST_EXTRA_CFLAGS+=" -qnoeh"
    # TEST_EXTRA_CFLAGS+=" -qreport -qlistopt -qlist -qskipsrc=hide -qsource"
 
-   NEK5K_EXTRA_PPLIST="EXTBAR"
+   NEK5K_EXTRA_PPLIST="BGQ EXTBAR"
 }
 
 
@@ -55,7 +56,7 @@ function setup_gcc()
 
 function set_mpi_options()
 {
-   local account="${account:-CSC249ADCD04}"
+   local account="${account:-NumSimFuel_2}"
    local partition="${partition:-default}"
 
    MPIEXEC_OPTS="-A ${account} -q ${partition} -t 29"
